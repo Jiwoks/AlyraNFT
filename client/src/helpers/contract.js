@@ -19,8 +19,6 @@ async function loadMainContracts() {
     const networkId = await web3Provider.eth.net.getId();
 
     if (
-        !factoryContract.networks[networkId] ||
-        !factoryContract.networks[networkId].address ||
         !collectionMasterContract.networks[networkId] ||
         !collectionMasterContract.networks[networkId].address
     ) {

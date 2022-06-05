@@ -13,18 +13,20 @@ const web3 = () =>
           await window.ethereum.enable();
           // Accounts now exposed
 
-          const localChainId = '0x539';
-          const kovanChainId = '0x2A';
-          const rinkebyChainId = '0x04';
+          const allowedChains = [
+            '0x539', // local
+            '0x2A', // kovan
+            '4', // rinkeby
+          ]
 
           const chainId = await window.ethereum.request({ method: 'eth_chainId' });
 
 
-          if (chainId !== kovanChainId && chainId !== localChainId && chainId !== rinkebyChainId) {
+          if (allowedChains.indexOf(chainId) !== -1) {
             try {
               await window.ethereum.request({
                 method: 'wallet_switchEthereumChain',
-                params: [{ chainId: kovanChainId}],
+                params: [{ chainId: allowedChains[0]}],
               });
               console.log("You have succefully switched to Kovan Test network")
             } catch (switchError) {
