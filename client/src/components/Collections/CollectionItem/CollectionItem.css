@@ -1,0 +1,39 @@
+.CollectionItem {
+    margin-top: 50px;
+    padding: 20px;
+    width: 300px;
+    min-height: 100px;
+    background-color: rgb(255, 255, 255, 80%);
+    border-radius: 4px;
+    box-shadow: 5px 5px 15px -7px rgba(2, 20, 31, 0.5);
+    cursor: pointer;
+}
+
+.CollectionItemTitle {
+    color: var(--main-color-2);
+    font-weight: bold;
+    text-align: center;
+}
+
+.CollectionItemDescription {
+    color: var(--main-color-3);
+    text-align: center;
+    font-size: 0.8em;
+}
+
+.CollectionItemImage {
+    position: relative;
+    margin-top: -80px;
+    width: 150px;
+    height: 150px;
+    border-radius: 100%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-color: #e3e3e3;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+

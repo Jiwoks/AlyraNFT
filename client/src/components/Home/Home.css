@@ -1,0 +1,10 @@
+.Home {
+    width: 100%;
+    position: relative;
+}
+
+.HomeCreateCollection {
+    position: absolute !important;
+    top: 0;
+    right: 0;
+}

@@ -1,0 +1,22 @@
+.NewCollection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.NewCollection .MuiPaper-root {
+    max-width: 500px;
+}
+
+.NewCollectionTextField {
+    margin: 10px 0 !important;
+}
+
+.NewCollectionButtons {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.NewCollectionButtonSave {
+    margin-left: 10px !important;
+}

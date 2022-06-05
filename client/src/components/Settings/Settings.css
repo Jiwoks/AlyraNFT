@@ -1,0 +1,22 @@
+.Settings {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.Settings .MuiPaper-root {
+    max-width: 500px;
+}
+
+.SettingsTextField {
+    margin: 10px 0 !important;
+}
+
+.SettingsButtons {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.SettingsButtonSave {
+    margin-left: 10px !important;
+}

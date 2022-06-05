@@ -1,0 +1,30 @@
+.Main {
+    position: relative;
+    flex-grow:1;
+    z-index: 10;
+}
+
+.Content {
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    max-width: 1200px;
+    align-items: center;
+}
+
+.Content > .Button {
+    max-width: 80%;
+    margin: 0 auto;
+}
+
+.MainAddPool {
+    position: absolute !important;
+    bottom: 20px;
+    right: 20px;
+}
+
+.MainMint {
+    position: absolute !important;
+    bottom: 90px;
+    right: 20px;
+}

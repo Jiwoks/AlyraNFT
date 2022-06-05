@@ -1,0 +1,28 @@
+{
+  "name": "alyranft",
+  "version": "1.0.0",
+  "main": "truffle-config.js",
+  "repository": "git@github.com:Jiwoks/AlyraNFT.git",
+  "author": "damien <damien.barrere@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@openzeppelin/contracts": "^4.6.0",
+    "@openzeppelin/test-helpers": "^0.5.15",
+    "chai": "^4.3.6",
+    "solidity-coverage": "0.8.0-beta.0",
+    "eth-gas-reporter": "^0.2.24",
+    "prettier": "^2.6.0",
+    "prettier-plugin-solidity": "^1.0.0-beta.19",
+    "solc-0.8": "npm:solc@^0.8.13",
+    "solhint": "^3.3.7",
+    "solhint-plugin-prettier": "^0.0.5",
+    "solidity-docgen": "^0.5.16",
+    "dotenv": "^16.0.1",
+    "@truffle/hdwallet-provider": "^2.0.8",
+    "truffle": "^5.4.17"
+  },
+  "scripts": {
+    "test": "truffle test",
+    "publish-rinkeby": "truffle migrate --network rinkeby"
+  }
+}

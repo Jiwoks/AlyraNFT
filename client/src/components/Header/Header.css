@@ -1,0 +1,24 @@
+.Header {
+    display: flex;
+    width: 100%;
+    background: var(--main-color-3);
+    padding: 10px;
+    margin-bottom: 20px;
+}
+
+.HeaderIcon svg {
+    margin-right: 20px;
+    height: 33px;
+    width: auto;
+    opacity: 70%;
+}
+
+.Title {
+    padding: 40px 0;
+    text-align: center;
+}
+
+.Title svg {
+    max-height: 100px;
+}
+

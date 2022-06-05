@@ -1,0 +1,14 @@
+{
+  "image": "ipfs://ipfs/QmbxJT2XQT4ZLZVZD4VWBVfMMYkdF7P9eD7UWnhsdsoqoX",
+  "name": "girl #1",
+  "attributes": [
+    {
+      "trait_type": "Eyes",
+      "value": "Red"
+    },
+    {
+      "trait_type": "Hair",
+      "value": "Blonde"
+    }
+  ]
+}

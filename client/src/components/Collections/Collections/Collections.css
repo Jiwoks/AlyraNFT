@@ -1,0 +1,15 @@
+.Collections {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.CollectionsItems {
+    display: flex;
+    gap: 20px
+}
+
+.CollectionsElement {
+    text-decoration: none;
+
+}

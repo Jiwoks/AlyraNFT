@@ -1,0 +1,14 @@
+.NotFound {
+    text-align: center;
+    color: var(--main-color-2);
+}
+.NotFoundTitle {
+    margin-top: 50px;
+    font-size: 3em;
+    font-weight: bold;
+}
+
+.NotFoundDesc {
+    font-weight: bold;
+    font-size: 1.5em;
+}

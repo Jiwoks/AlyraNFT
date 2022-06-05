@@ -1,0 +1,23 @@
+.NewNFT {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.NewNFT .MuiPaper-root {
+    max-width: 500px;
+}
+
+.NewNFTTextField {
+    margin: 10px 0 !important;
+}
+
+.NewNFTButtons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.NewNFTButtonSave {
+    margin-left: 10px !important;
+}

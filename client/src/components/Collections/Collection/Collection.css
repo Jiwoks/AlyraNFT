@@ -1,0 +1,14 @@
+.Collection {
+    width: 100%;
+}
+
+.CollectionItems {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.CollectionAddButton {
+    float: right;
+}
+
