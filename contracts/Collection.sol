@@ -15,7 +15,7 @@ contract Collection is Ownable, ERC721URIStorage {
     /**
      * @dev Emitted when `tokenId` is minted token from `from`.
      */
-    event Mint(address indexed from, uint256 indexed tokenId, string uri);
+    event Minted(address indexed from, uint256 indexed tokenId, string uri);
 
     constructor() ERC721("", "")  {}
 
@@ -44,7 +44,7 @@ contract Collection is Ownable, ERC721URIStorage {
         _safeMint(msg.sender, _tokenCount);
         _setTokenURI(_tokenCount, tokenURI);
 
-        emit Mint(msg.sender, _tokenCount, tokenURI);
+        emit Minted(msg.sender, _tokenCount, tokenURI);
 
         _tokenCount ++;
         return _tokenCount - 1;
