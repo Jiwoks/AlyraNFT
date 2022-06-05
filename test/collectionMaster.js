@@ -1,6 +1,5 @@
 const CollectionMaster = artifacts.require("./CollectionMaster.sol");
 const Collection = artifacts.require("./Collection.sol");
-const Factory = artifacts.require("./Factory.sol");
 
 const { expectRevert, expectEvent } = require('@openzeppelin/test-helpers');
 const { expect } = require('chai');
@@ -8,7 +7,7 @@ const { getTransactionEventReturns } = require('../helpers/events');
 
 let collectionMasterInstance;
 /**
- * Create a new instance of the factory
+ * Create a new instance of the CollectionMaster
  *
  * @returns {Promise<void>}
  */
@@ -25,9 +24,7 @@ const newCollectionMasterInstance = async () => {
  * @return {Promise<any>}
  */
 const newCollectionInstance = async (name = 'Name', symbol = 'Symbol', description = 'Description') => {
-  const factoryInstance = await Factory.new(collectionMasterInstance.address);
-  await collectionMasterInstance.transferOwnership(factoryInstance.address);
-  const receipt = await factoryInstance.createCollection(name, symbol, description);
+  const receipt = await collectionMasterInstance.createCollection(name, symbol, description);
   const collectionAddress = getTransactionEventReturns(receipt, 'CollectionCreated', 'collectionAddress');
   const collectionInstance = await Collection.at(collectionAddress);
   await collectionInstance.setApprovalForAll(collectionMasterInstance.address, true);
@@ -57,18 +54,6 @@ contract("CollectionMaster", accounts => {
     await newCollectionMasterInstance();
   });
 
-  it("createCollection: should only be allowed to owner.", async () => {
-    await expectRevert(collectionMasterInstance.createCollection(accounts[1], accounts[2], {from: accounts[1]}), ' Ownable: caller is not the owner');
-    await collectionMasterInstance.createCollection(accounts[1], accounts[2]);
-  });
-
-  it("getUserCollectionsCount: should return right count", async () => {
-    await collectionMasterInstance.createCollection(accounts[1], accounts[2]);
-    expect(await collectionMasterInstance.getUserCollectionsCount(accounts[1])).to.be.bignumber.equals('1');
-    await collectionMasterInstance.createCollection(accounts[1], accounts[2]);
-    expect(await collectionMasterInstance.getUserCollectionsCount(accounts[1])).to.be.bignumber.equals('2');
-  });
-
   it("getUserCollections: should revert if parameters are wrong", async () => {
     await expectRevert(collectionMasterInstance.getUserCollections(accounts[0], '10', '10'), 'From should be greater than to');
     await expectRevert(collectionMasterInstance.getUserCollections(accounts[0], '10', '9'), 'From should be greater than to');
@@ -80,15 +65,14 @@ contract("CollectionMaster", accounts => {
   });
 
   it("getUserCollections: should revert if querying too many items", async () => {
-    await collectionMasterInstance.createCollection(accounts[0], accounts[1]);
+    await collectionMasterInstance.createCollection('Name', 'Symbol', 'Description');
     await expectRevert(collectionMasterInstance.getUserCollections(accounts[0], '0', '20'), 'Maximum elements is 20');
     await expectRevert(collectionMasterInstance.getUserCollections(accounts[0], '0', '50'), 'Maximum elements is 20');
   });
 
   it("getUserCollections: should revert if _from is out of bounds", async () => {
     for (let ij = 0; ij < 10; ij++) {
-      const account = web3.eth.accounts.create();
-      await collectionMasterInstance.createCollection(accounts[0], account.address);
+      await collectionMasterInstance.createCollection('Name', 'Symbol', 'Description');
     }
     await expectRevert(collectionMasterInstance.getUserCollections(accounts[0], '10', '11'), 'Out of bounds');
     await expectRevert(collectionMasterInstance.getUserCollections(accounts[0], '20', '30'), 'Out of bounds');
@@ -96,58 +80,44 @@ contract("CollectionMaster", accounts => {
   });
 
   it("should retrieve collections without giving `from` and `to` parameters", async () => {
-    const collectionsAddresses = [];
-    const account = web3.eth.accounts.create();
-    collectionsAddresses.push(account.address);
-    await collectionMasterInstance.createCollection(accounts[0], account.address);
+    await collectionMasterInstance.createCollection('Name', 'Symbol', 'Description');
 
     let collections = await collectionMasterInstance.getUserCollections(accounts[0]);
-    expect(collections).to.be.deep.equals(collectionsAddresses);
-
-    for (let ij = 5; ij < 1; ij++) {
-      const account = web3.eth.accounts.create();
-      collectionsAddresses.push(account.address);
-      await collectionMasterInstance.createCollection(accounts[0], account.address);
-    }
-
-    collections = await collectionMasterInstance.getUserCollections(accounts[0]);
-    expect(collections).to.be.deep.equals(collectionsAddresses);
+    expect(collections).to.be.length(1);
 
     for (let ij = 0; ij < 5; ij++) {
-      const account = web3.eth.accounts.create();
-      collectionsAddresses.push(account.address);
-      await collectionMasterInstance.createCollection(accounts[0], account.address);
+      await collectionMasterInstance.createCollection('Name', 'Symbol', 'Description');
     }
 
     collections = await collectionMasterInstance.getUserCollections(accounts[0]);
-    expect(collections).to.be.deep.equals(collectionsAddresses.slice(0, 20));
+    expect(collections).to.be.length(6);
+
+    for (let ij = 0; ij < 30; ij++) {
+      await collectionMasterInstance.createCollection('Name', 'Symbol', 'Description');
+    }
+
+    collections = await collectionMasterInstance.getUserCollections(accounts[0]);
+    expect(collections).to.be.length(20);
   });
 
   it("should retrieve collections giving `from` and `to` parameters", async () => {
-    const collectionsAddresses = [];
     for (let ij = 0; ij < 5; ij++) {
-      const account = web3.eth.accounts.create();
-      collectionsAddresses.push(account.address);
-      await collectionMasterInstance.createCollection(accounts[0], account.address);
+      await collectionMasterInstance.createCollection('Name', 'Symbol', 'Description');
     }
 
-    let collections = await collectionMasterInstance.getUserCollections(accounts[0]);
-    expect(collections).to.be.deep.equals(collectionsAddresses);
+    let collections = await collectionMasterInstance.getUserCollections(accounts[0], '0', '4');
+    expect(collections).to.be.length(5);
 
-    for (let ij = 0; ij < 5; ij++) {
-      const account = web3.eth.accounts.create();
-      collectionsAddresses.push(account.address);
-      await collectionMasterInstance.createCollection(accounts[0], account.address);
+    for (let ij = 0; ij < 30; ij++) {
+      await collectionMasterInstance.createCollection('Name', 'Symbol', 'Description');
     }
 
-    collections = await collectionMasterInstance.getUserCollections(accounts[0]);
-    expect(collections).to.be.deep.equals(collectionsAddresses.slice(0, 20));
+    collections = await collectionMasterInstance.getUserCollections(accounts[0], '3', '15');
+    expect(collections).to.be.length(13);
   });
 
   it("should check that token is approved when setting item price", async () => {
-    const factoryInstance = await Factory.new(collectionMasterInstance.address);
-    await collectionMasterInstance.transferOwnership(factoryInstance.address);
-    const receipt = await factoryInstance.createCollection('Name', 'Symbol', 'Description');
+    const receipt = await collectionMasterInstance.createCollection('Name', 'Symbol', 'Description');
     const collectionAddress = getTransactionEventReturns(receipt, 'CollectionCreated', 'collectionAddress');
     const collectionInstance = await Collection.at(collectionAddress);
     await collectionInstance.mint('ipfs://ipfs/xxxxxxxxxxxxxxxxxxxxxxxxxxxx');
@@ -157,9 +127,7 @@ contract("CollectionMaster", accounts => {
   });
 
   it("should check that user is approved for all when setting item price", async () => {
-    const factoryInstance = await Factory.new(collectionMasterInstance.address);
-    await collectionMasterInstance.transferOwnership(factoryInstance.address);
-    const receipt = await factoryInstance.createCollection('Name', 'Symbol', 'Description');
+    const receipt = await collectionMasterInstance.createCollection('Name', 'Symbol', 'Description');
     const collectionAddress = getTransactionEventReturns(receipt, 'CollectionCreated', 'collectionAddress');
     const collectionInstance = await Collection.at(collectionAddress);
     await collectionInstance.mint('ipfs://ipfs/xxxxxxxxxxxxxxxxxxxxxxxxxxxx');

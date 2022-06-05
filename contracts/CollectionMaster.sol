@@ -3,10 +3,9 @@ pragma solidity 0.8.13;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Collection.sol";
+import "./Factory.sol";
 
-contract CollectionMaster is Ownable {
-
-    mapping(address => address[]) public userCollections;
+contract CollectionMaster is Ownable, Factory {
 
     mapping(address => mapping(uint256 => uint256)) public itemPrice;
 
@@ -21,16 +20,9 @@ contract CollectionMaster is Ownable {
     _;
     }
 
-    event CollectionCreated(address collectionOwnerAddress, address collectionAddress);
-
     event ItemPriceChanged(address collectionAddress, uint256 tokenId, uint256 priceBefore, uint256 priceAfter);
 
     event Bought(address previousOwner, address newOwner, uint256 price);
-
-    function createCollection(address _collectionOwnerAddress, address _collectionAddress) external onlyOwner {
-        userCollections[_collectionOwnerAddress].push(_collectionAddress);
-        emit CollectionCreated(_collectionOwnerAddress, _collectionAddress);
-    }
 
     function setItemPrice(address _collectionAddress, uint256 _itemId, uint256 _price) external onlyApproved(_collectionAddress, _itemId) {
         // Only the owner can sell the token

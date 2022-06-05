@@ -7,7 +7,7 @@ import walletStore from '../stores/wallet';
 import axios from "axios";
 import {getPinataSettings} from "./settings";
 
-let factoryContractInstance, collectionMasterContractInstance;
+let collectionMasterContractInstance;
 
 /**
  * Load the contract with our web3 provider
@@ -28,10 +28,6 @@ async function loadMainContracts() {
         return;
     }
 
-    factoryContractInstance = new web3Provider.eth.Contract(
-        factoryContract.abi,
-        factoryContract.networks[networkId].address,
-    );
     collectionMasterContractInstance = new web3Provider.eth.Contract(
         collectionMasterContract.abi,
         collectionMasterContract.networks[networkId].address,
@@ -57,7 +53,7 @@ async function loadCollectionContract(contractAddress) {
  */
 async function createCollection(name, symbol, description) {
     const walletAddress = walletStore.getState().address;
-    return await factoryContractInstance.methods.createCollection(name, symbol, description).send({from: walletAddress});
+    return await collectionMasterContractInstance.methods.createCollection(name, symbol, description).send({from: walletAddress});
 }
 
 /**
@@ -99,7 +95,7 @@ async function uploadAndMintNFTFromMetadataFile(collectionAddress, file) {
 
 async function getLatestCollections() {
     try {
-        const events = await factoryContractInstance.getPastEvents('CollectionCreated', {fromBlock: 0});
+        const events = await collectionMasterContractInstance.getPastEvents('CollectionCreated', {fromBlock: 0});
         const collections = [];
         for(const event of events.splice(-10)) {
             collections.push(event.returnValues.collectionAddress)

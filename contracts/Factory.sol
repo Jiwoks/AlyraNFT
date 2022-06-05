@@ -2,19 +2,15 @@
 pragma solidity 0.8.13;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./ICollectionMaster.sol";
 import "./Collection.sol";
 
 contract Factory is Ownable {
 
-    address private master;
     uint256 private collectionCreatedCount;
 
-    event CollectionCreated(string name, address collectionAddress, uint timestamp);
+    mapping(address => address[]) public userCollections;
 
-    constructor(address _master) {
-        master = _master;
-    }
+    event CollectionCreated(string name, string symbol, string description, address collectionAddress, uint timestamp);
 
     function createCollection(string memory _name, string memory _symbol, string memory _description) external returns (address collectionAddress) {
         // Import the bytecode of the contract to deploy
@@ -33,12 +29,12 @@ contract Factory is Ownable {
         // Initialize the collection contract
         Collection(collectionAddress).init(msg.sender, _name, _symbol, _description);
 
-        // Save the owner of this collection in master contract
-        ICollectionMaster(master).createCollection(msg.sender, collectionAddress);
+        // Save the owner of this collection
+        userCollections[msg.sender].push(collectionAddress);
 
         collectionCreatedCount ++;
 
-        emit CollectionCreated(_name, collectionAddress, block.timestamp);
+        emit CollectionCreated(_name, _symbol, _description, collectionAddress, block.timestamp);
 
         return collectionAddress;
     }

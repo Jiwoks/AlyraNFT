@@ -1,5 +1,4 @@
 const CollectionMaster = artifacts.require("./CollectionMaster.sol");
-const Factory = artifacts.require("./Factory.sol");
 const Collection = artifacts.require("./Collection.sol");
 
 const { expectRevert, expectEvent } = require('@openzeppelin/test-helpers');
@@ -7,47 +6,37 @@ const { expect } = require('chai');
 const { getTransactionEventReturns } = require('../helpers/events');
 
 
-let collectionMasterInstance, factoryInstance;
+let collectionMasterInstance;
 /**
- * Create a new instance of the factory
+ * Create a new instance of the collection Master
  *
  * @returns {Promise<void>}
  */
-const newFactoryInstance = async () => {
+const newCollectionMasterInstance = async () => {
   collectionMasterInstance = await CollectionMaster.new();
-  factoryInstance = await Factory.new(collectionMasterInstance.address);
-  await collectionMasterInstance.transferOwnership(factoryInstance.address);
 }
 
-contract("Factory", accounts => {
+contract("CollectionMaster is Factory", accounts => {
 
   beforeEach(async () => {
-    await newFactoryInstance();
+    await newCollectionMasterInstance();
   });
 
-  it("should create nft collection.", async () => {
+  it("getUserCollectionsCount: should return right count", async () => {
+    await collectionMasterInstance.createCollection('Name', 'Symbol', 'Description', {from: accounts[1]});
+    expect(await collectionMasterInstance.getUserCollectionsCount(accounts[1])).to.be.bignumber.equals('1');
+    await collectionMasterInstance.createCollection('Name', 'Symbol', 'Description', {from: accounts[1]});
+    expect(await collectionMasterInstance.getUserCollectionsCount(accounts[1])).to.be.bignumber.equals('2');
+  });
 
-    const receipt = await factoryInstance.createCollection('Name', 'Symbol', 'Description');
+  it("createCollection: should create nft collection.", async () => {
+    const receipt = await collectionMasterInstance.createCollection('Name', 'Symbol', 'Description');
 
     expectEvent(receipt, "CollectionCreated", {name: "Name"});
   });
 
-  it("should transfer ownership.", async () => {
-    const factoryInstance = await Factory.deployed();
-
-    const receipt = await factoryInstance.createCollection('Name', 'Symbol', 'Description', {from: accounts[1]});
-
-    const collectionAddress = getTransactionEventReturns(receipt, 'CollectionCreated', 'collectionAddress');
-
-    const collectionInstance = await Collection.at(collectionAddress);
-
-    expect(await collectionInstance.owner()).to.be.equals(accounts[1]);
-  });
-
-  it("should set name and symbol.", async () => {
-    const factoryInstance = await Factory.deployed();
-
-    const receipt = await factoryInstance.createCollection('Say my name', 'Heisenberg', 'You re damn right', {from: accounts[1]});
+  it("createCollection: should set name and symbol.", async () => {
+    const receipt = await collectionMasterInstance.createCollection('Say my name', 'Heisenberg', 'You re damn right', {from: accounts[1]});
     const collectionAddress = getTransactionEventReturns(receipt, 'CollectionCreated', 'collectionAddress');
 
     const collectionInstance = await Collection.at(collectionAddress);
@@ -57,10 +46,8 @@ contract("Factory", accounts => {
     expect(await collectionInstance.description()).to.be.equals('You re damn right');
   });
 
-  it("should add a collection", async () => {
-    const factoryInstance = await Factory.deployed();
-
-    const receipt = await factoryInstance.createCollection('Say my name', 'Heisenberg', 'You re damn right', {from: accounts[0]});
+  it("createCollection: should add a collection", async () => {
+    const receipt = await collectionMasterInstance.createCollection('Say my name', 'Heisenberg', 'You re damn right', {from: accounts[0]});
     const collectionAddress = getTransactionEventReturns(receipt, 'CollectionCreated', 'collectionAddress');
 
     const collectionInstance = await Collection.at(collectionAddress);

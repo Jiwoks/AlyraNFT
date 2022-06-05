@@ -1,6 +1,5 @@
 const {getTransactionEventReturns} = require("../helpers/events");
 require('dotenv').config();
-const Factory = artifacts.require("./Factory.sol");
 const CollectionMaster = artifacts.require("./CollectionMaster.sol");
 const Collection = artifacts.require("./Collection.sol");
 
@@ -8,11 +7,10 @@ module.exports = async function(deployer, network) {
     if (network !== 'development') {
         return;
     }
-    const factoryInstance = await Factory.deployed();
     const collectionMasterInstance = await CollectionMaster.deployed();
 
     // MoeGirls
-    const receipt1 = await factoryInstance.createCollection('MakeGirlMoe', 'MGM', 'AI Generated girls from https://make.girls.moe/');
+    const receipt1 = await collectionMasterInstance.createCollection('MakeGirlMoe', 'MGM', 'AI Generated girls from https://make.girls.moe/');
     const collection1Address = getTransactionEventReturns(receipt1, 'CollectionCreated', 'collectionAddress');
 
     const collection1Instance = await Collection.at(collection1Address);
@@ -28,7 +26,7 @@ module.exports = async function(deployer, network) {
     await collectionMasterInstance.setItemPrice(collection1Address, '1', web3.utils.toWei('1.5'));
 
     // Mutant Ape
-    const receipt2 = await factoryInstance.createCollection('Mutants Ape Club', 'MAYC', 'Mutant Apes');
+    const receipt2 = await collectionMasterInstance.createCollection('Mutants Ape Club', 'MAYC', 'Mutant Apes');
     const collection2Address = getTransactionEventReturns(receipt2, 'CollectionCreated', 'collectionAddress');
 
     const collection2Instance = await Collection.at(collection2Address);
