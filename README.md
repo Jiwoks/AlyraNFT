@@ -35,7 +35,7 @@ ipfs://ipfs/QmSEJSX1fbxXnu8CSkpcYFBGeZ2ATjHRhyz4vcvBLafR28
 Use loading context https://stackoverflow.com/questions/66592593/global-screen-loader-in-react
 
 ## Todo
-[ ] Test events
+[ ] Test events  
 [ ] Handle not in the right network
 
 ## Credits
