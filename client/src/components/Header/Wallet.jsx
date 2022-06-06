@@ -42,7 +42,6 @@ function Wallet() {
     const handleLogout = () => {
         setAnchorEl(null);
         disconnect();
-        navigate('/');
     }
 
     const handleMyAccount = () => {

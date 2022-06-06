@@ -12,12 +12,8 @@ function Home() {
     return (
         <div className="Home">
             <Button className="HomeCreateCollection" variant="contained" color="info" onClick={() => navigate('/collections/new')}>New collection</Button>
-            {address &&
-                <>
-                    <Collections type="user" title="My collections" emptyText="You don't have any collection yet."/>
-                    <Collections type="latest" title="Last 10 collections"  emptyText="No collection created yet."/>
-                </>
-            }
+            {address && <Collections type="user" title="My collections" emptyText="You don't have any collection yet."/> }
+            <Collections type="latest" title="Last 10 collections"  emptyText="No collection created yet."/>
         </div>
     );
 }

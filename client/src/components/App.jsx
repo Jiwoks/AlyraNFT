@@ -10,7 +10,6 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import Waves from "./Waves/Waves";
-import {LoadingProvider} from "../contexts/LoadingContext";
 import {ReactComponent as Island} from '../assets/island.svg';
 import {ApolloProvider} from "@apollo/client";
 import {client} from "../helpers/graph";
@@ -49,9 +48,7 @@ function App() {
                 <div className="cloud x5"></div>
 
                 <ThemeProvider theme={theme}>
-                    <LoadingProvider>
-                        <Main set404={set404}/>
-                    </LoadingProvider>
+                    <Main set404={set404}/>
                     <Waves/>
                     {is404 && <Island className="AppIsland" />}
                     <ToastContainer
