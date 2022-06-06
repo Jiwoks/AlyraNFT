@@ -99,13 +99,11 @@ function NFTDetails() {
 
     let owner = '';
     let isOwner = false;
-    if (address !== '' && nft.owner !== undefined) {
-        if (address.toLowerCase() === nft.owner.toLowerCase()) {
-            owner = 'you';
-            isOwner = true;
-        } else {
-            owner = nft.owner;
-        }
+    if (address && address.toLowerCase() === nft.owner.toLowerCase()) {
+        owner = 'you';
+        isOwner = true;
+    } else {
+        owner = nft.owner;
     }
 
     let attributes = null;

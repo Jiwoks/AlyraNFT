@@ -7,9 +7,9 @@ import {useQuery} from "@apollo/client";
 function Collections({type, title, emptyText}) {
     let query;
     if (type === 'user') {
-        query = latestCollectionsQuery;
+        query = latestUserCollectionsQuery;
     } else {
-        query = latestUserCollectionsQuery
+        query = latestCollectionsQuery
     }
     const { loading, error, data } = useQuery(query);
 
