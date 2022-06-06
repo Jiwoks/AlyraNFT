@@ -1,0 +1,56 @@
+specVersion: 0.0.4
+description: NFT Marketplace for Ethereum
+repository: https://github.com/Jiwoks/AlyraNFT
+schema:
+  file: ./schema.graphql
+features:
+  - fullTextSearch
+dataSources:
+  - name: CollectionMaster
+    kind: ethereum/contract
+    network: rinkeby
+    source:
+      address: "0x5c0d3ECDdfDB736131Aa6cD6B23657814614D1a3"
+      abi: CollectionMaster
+      startBlock: 10799100
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Collection
+      abis:
+        - name: CollectionMaster
+          file: ../client/src/contracts/CollectionMaster.json
+      eventHandlers:
+        - event: CollectionCreated(string,string,string,address,uint256)
+          handler: handleCollectionCreated
+        - event: ItemPriceChanged(address,uint256,uint256,uint256)
+          handler: handleItemPriceChanged
+        - event: Bought(address,address,uint256)
+          handler: handleBought
+      file: ./src/collection-master.ts
+templates:
+  - name: Collection
+    kind: ethereum/contract
+    network: rinkeby
+    source:
+      abi: Collection
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Collection
+        - NFTItem
+      abis:
+        - name: Collection
+          file: ../client/src/contracts/Collection.json
+      eventHandlers:
+        - event: Minted(indexed address,indexed uint256,string)
+          handler: handleMinted
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+        - event: OwnershipTransferred(indexed address,indexed address)
+          handler: handleOwnershipTransferred
+      file: ./src/collection.ts

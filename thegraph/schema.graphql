@@ -1,0 +1,34 @@
+type Collection @entity {
+  id: Bytes!
+  owner: Bytes!
+  name: String!
+  symbol: String!
+  description: String!
+  NFTs: [NFTItem!] @derivedFrom(field: "collection")
+}
+
+type NFTItem @entity {
+  id: String!
+  tokenId: BigInt!
+  owner: Bytes!
+  uri: String
+  price: BigInt
+  collection: Collection!
+}
+
+type Event @entity (immutable: true) {
+  id: String!
+  name: String!
+  from: Bytes
+  to: Bytes
+  price: BigInt
+  transactionId: Bytes
+}
+
+type _Schema_
+@fulltext(
+  name: "collectionSearch"
+  language: en
+  algorithm: rank
+  include: [{ entity: "Collection", fields: [{ name: "name" }, { name: "description" }, { name: "symbol" }] }]
+)
