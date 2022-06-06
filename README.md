@@ -36,6 +36,7 @@ Use loading context https://stackoverflow.com/questions/66592593/global-screen-l
 
 ## Todo
 [ ] Test events
+[ ] Handle not in the right network
 
 ## Credits
 Images from https://make.girls.moe/  
