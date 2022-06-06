@@ -12,6 +12,8 @@ import '@fontsource/roboto/700.css';
 import Waves from "./Waves/Waves";
 import {LoadingProvider} from "../contexts/LoadingContext";
 import {ReactComponent as Island} from '../assets/island.svg';
+import {ApolloProvider} from "@apollo/client";
+import {client} from "../helpers/graph";
 
 const theme = createTheme({
     palette: {
@@ -38,32 +40,34 @@ function App() {
     const [is404, set404] = useState(false);
 
     return (
-        <BrowserRouter>
-            <div className="cloud x1"></div>
-            <div className="cloud x2"></div>
-            <div className="cloud x3"></div>
-            <div className="cloud x4"></div>
-            <div className="cloud x5"></div>
+        <ApolloProvider client={client}>
+            <BrowserRouter>
+                <div className="cloud x1"></div>
+                <div className="cloud x2"></div>
+                <div className="cloud x3"></div>
+                <div className="cloud x4"></div>
+                <div className="cloud x5"></div>
 
-            <ThemeProvider theme={theme}>
-                <LoadingProvider>
-                    <Main set404={set404}/>
-                </LoadingProvider>
-                <Waves/>
-                {is404 && <Island className="AppIsland" />}
-                <ToastContainer
-                    position="bottom-right"
-                    autoClose={5000}
-                    hideProgressBar={false}
-                    newestOnTop={false}
-                    closeOnClick
-                    rtl={false}
-                    pauseOnFocusLoss
-                    draggable
-                    pauseOnHover
-                />
-            </ThemeProvider>
-        </BrowserRouter>
+                <ThemeProvider theme={theme}>
+                    <LoadingProvider>
+                        <Main set404={set404}/>
+                    </LoadingProvider>
+                    <Waves/>
+                    {is404 && <Island className="AppIsland" />}
+                    <ToastContainer
+                        position="bottom-right"
+                        autoClose={5000}
+                        hideProgressBar={false}
+                        newestOnTop={false}
+                        closeOnClick
+                        rtl={false}
+                        pauseOnFocusLoss
+                        draggable
+                        pauseOnHover
+                    />
+                </ThemeProvider>
+            </BrowserRouter>
+        </ApolloProvider>
 );
 }
 

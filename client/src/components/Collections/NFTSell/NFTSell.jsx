@@ -6,7 +6,7 @@ import {sellNFT} from "../../../helpers/contract";
 import web3 from "web3";
 import {toast} from "react-toastify";
 
-function NFTSell({popupOpened, setPopupOpened, collectionId, itemId, updateNFTDetails}) {
+function NFTSell({popupOpened, setPopupOpened, collectionId, itemId, changeNftPrice}) {
     const [price, setPrice] = useState('');
     const [sellDisabled, setSellDisabled] = useState(true);
 
@@ -16,8 +16,9 @@ function NFTSell({popupOpened, setPopupOpened, collectionId, itemId, updateNFTDe
 
     const handleSell = async () => {
         setSellDisabled(true);
+        const weiPrice = web3.utils.toWei(price);
         await toast.promise(
-            sellNFT(collectionId, itemId, web3.utils.toWei(price)),
+            sellNFT(collectionId, itemId, weiPrice),
             {
                 pending: 'Listing NFT ...',
                 success: 'Your NFT has been listed 👌',
@@ -33,7 +34,7 @@ function NFTSell({popupOpened, setPopupOpened, collectionId, itemId, updateNFTDe
             }
         ).then(() => {
             handleClose();
-            updateNFTDetails();
+            changeNftPrice(weiPrice);
         }).finally(() => {
             setSellDisabled(false);
         });

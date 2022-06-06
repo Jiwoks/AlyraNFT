@@ -1,31 +1,26 @@
-import React, {useEffect, useState} from "react";
+import React from "react";
 import './Collections.css';
-import {getLatestCollections, getUserCollections} from "../../../helpers/contract";
+import {latestCollectionsQuery, latestUserCollectionsQuery} from "../../../helpers/graph";
 import CollectionItem from "../CollectionItem/CollectionItem";
+import {useQuery} from "@apollo/client";
 
 function Collections({type, title, emptyText}) {
-    const [collections, setCollections] = useState(null);
-
-    useEffect(() => {
-        (async () => {
-            if (type === 'user') {
-                const collections = await getUserCollections();
-                setCollections(collections);
-            } else if (type === 'latest') {
-                const collections = await getLatestCollections();
-                setCollections(collections);
-            }
-        })();
-    }, []);
+    let query;
+    if (type === 'user') {
+        query = latestCollectionsQuery;
+    } else {
+        query = latestUserCollectionsQuery
+    }
+    const { loading, error, data } = useQuery(query);
 
     return (
         <div className="Collections">
             <h1>{title}</h1>
             <div className="CollectionsItems">
-                {collections !== null && collections.length === 0 && <>{emptyText}</>}
-                {collections !== null && collections.map((collection) => {
+                {!loading && !error && data.collections.length === 0 && <>{emptyText}</>}
+                {!loading && !error && data.collections.map((collection) => {
                     return (
-                        <CollectionItem key={collection} collectionId={collection} />
+                        <CollectionItem key={collection.id} collection={collection} />
                     )
                 })}
             </div>

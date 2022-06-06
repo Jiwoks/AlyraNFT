@@ -5,10 +5,9 @@ import {
     buyNFT,
     cancelSell,
     checkIPFSUri,
-    getCollectionDetails,
-    getNftDetails,
+    getNftMetadata,
 } from "../../../helpers/contract";
-import {useParams} from "react-router-dom";
+import {Link, Navigate, useParams} from "react-router-dom";
 import walletStore from "../../../stores/wallet";
 import {ReactComponent as Ethereum} from '../../../assets/ethereum.svg';
 import Button from "@mui/material/Button";
@@ -16,23 +15,57 @@ import NFTSell from "../NFTSell/NFTSell";
 import web3 from "web3";
 import {toast} from "react-toastify";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import {useQuery} from "@apollo/client";
+import {client, nftItemQuery} from "../../../helpers/graph";
 
 function NFTDetails() {
-    const [NFT, setNFT] = useState({
-        metadata: {},
-    });
-    const [collection, setCollection] = useState({});
     const [popupOpened, setPopupOpened] = useState(false);
+    const [nftMetadata, setNftMetadata] = useState({});
     const { collectionId, itemId } = useParams();
     const { address } = walletStore(state => ({address: state.address}));
 
-    useEffect(() => {
-        getCollectionDetails(collectionId).then((collection) => setCollection(collection));
-        updateNFTDetails();
-    }, []);
+    const { loading, error, data, refetch } = useQuery(nftItemQuery, {
+        variables: {
+            collectionId: collectionId,
+            tokenId: itemId
+        }
+    });
 
-    const updateNFTDetails = () => {
-        getNftDetails(collectionId, itemId).then(nft => setNFT(nft));
+    let collection, nft;
+    if (data !== undefined) {
+        collection = data.collection;
+
+        if (data.collection.NFTs.length) {
+            nft = data.collection.NFTs[0];
+        }
+    }
+
+    useEffect(() => {
+        if (!nft) {
+            return;
+        }
+        updateNFTMetadata();
+    }, [nft]);
+
+    if (!loading && !nft) {
+        return <Navigate to="/404" />;
+    }
+
+    const updateNFTMetadata = () => {
+        getNftMetadata(nft.uri).then(metadata => setNftMetadata(metadata));
+    }
+
+    if (loading) {
+        return <></>
+    }
+
+    const changePrice = (cacheItem, value) => {
+        client.cache.modify({
+            id: client.cache.identify(cacheItem),
+            fields: {
+                price: (cachedPrice) => value
+            }
+        });
     }
 
     const cancelListing = async () => {
@@ -52,7 +85,7 @@ function NFTDetails() {
                 }
             }
         ).then(() => {
-            updateNFTDetails();
+            changePrice(nft, null);
         });
     }
 
@@ -61,33 +94,32 @@ function NFTDetails() {
     }
 
     const style = {
-        backgroundImage: NFT.metadata.image ? 'url(' + checkIPFSUri(NFT.metadata.image) + ')' : undefined
+        backgroundImage: nftMetadata.image ? 'url(' + checkIPFSUri(nftMetadata.image) + ')' : undefined
     };
 
     let owner = '';
     let isOwner = false;
-    if (address !== '' && NFT.owner !== undefined) {
-        if (address.toLowerCase() === NFT.owner.toLowerCase()) {
+    if (address !== '' && nft.owner !== undefined) {
+        if (address.toLowerCase() === nft.owner.toLowerCase()) {
             owner = 'you';
             isOwner = true;
         } else {
-            owner = NFT.owner;
+            owner = nft.owner;
         }
-
     }
 
     let attributes = null;
-    if (NFT.metadata && NFT.metadata.attributes) {
-        attributes = NFT.metadata.attributes;
+    if (nftMetadata && nftMetadata.attributes) {
+        attributes = nftMetadata.attributes;
     }
 
     let priceInfo = '';
-    if (NFT.price > 0) {
+    if (nft.price > 0) {
         priceInfo = (
             <>
                 <div className="NFTDetailsPrice">
                     <Ethereum className="NFTDetailsPriceEthereum" />
-                    {web3.utils.fromWei(NFT.price)}
+                    {web3.utils.fromWei(nft.price)}
                     {!isOwner && <Button className="NFTDetailsBuyButton" variant="contained" color="info" onClick={() => {buy()}}>Buy</Button>}
                     {isOwner && <Button className="NFTDetailsBuyButton" variant="contained" color="info" onClick={cancelListing}>Cancel</Button>}
                 </div>
@@ -113,7 +145,7 @@ function NFTDetails() {
                     {priceInfo}
                 </div>
                 <div className="NFTDetailsInfosWrapper">
-                    <h1><a className="NFTDetailsCollectionLink" href={'/collections/' + collectionId}><ArrowBackIosNewIcon className="NFTDetailsCollectionLinkBack" /> {collection.name} #{itemId}</a></h1>
+                    <h1><Link className="NFTDetailsCollectionLink" to={'/collections/' + collectionId}><ArrowBackIosNewIcon className="NFTDetailsCollectionLinkBack" /> {data.collection.name} #{itemId}</Link></h1>
                     <p>Owner : {owner}</p>
                     <p>{collection.description}</p>
                     {attributes !== null && <div>
@@ -128,7 +160,7 @@ function NFTDetails() {
                     </div>}
                 </div>
             </div>
-            <NFTSell popupOpened={popupOpened} setPopupOpened={setPopupOpened} collectionId={collectionId} itemId={itemId} updateNFTDetails={updateNFTDetails}/>
+            <NFTSell popupOpened={popupOpened} setPopupOpened={setPopupOpened} collectionId={collectionId} itemId={itemId} changeNftPrice={(value) => changePrice(nft, value)}/>
         </>
     );
 }
